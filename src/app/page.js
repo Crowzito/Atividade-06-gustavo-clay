@@ -1,95 +1,108 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
 
-export default function Home() {
+import Pagina from "@/components/Pagina";
+import { useState } from "react";
+import { Card, Col, Form, Row } from "react-bootstrap";
+
+export default function CambistaPage() {
+  const [moeda, setMoeda] = useState("");
+  const [taxaConversao, setTaxaConversao] = useState("");
+  const [real, setReal] = useState(1);
+  const [equacao, setEquacao] = useState(0);
+
+  function handleMoeda(moedaSelecionada) {
+    let taxa = "";
+    if (moedaSelecionada === "dolar") {
+      taxa = "Taxa de conversão de dólar: 1 real = 0,20 dólares";
+    } else if (moedaSelecionada === "euro") {
+      taxa = "Taxa de conversão de euro: 1 real = 0,18 euros";
+    } else if (moedaSelecionada === "bitcoin") {
+      taxa = "Taxa de conversão de bitcoin: 1 real = 0,000003 bitcoins";
+    } else {
+      taxa = "";
+    }
+    setTaxaConversao(taxa);
+  }
+
+  function handleImage(moeda) {
+    if (moeda === "dolar") {
+      return "/dolar.png";
+    } else if (moeda === "euro") {
+      return "/euro.png";
+    } else if (moeda === "bitcoin") {
+      return "/bitcoin.png";
+    } else {
+      return "/cambio.jpg";
+    }
+  }
+
+  function handleConvertion(value) {
+    let valor = 0;
+    if (moeda === "dolar") {
+      valor = real * 0.2;
+    } else if (moeda === "euro") {
+      valor = real * 0.18;
+    } else if (moeda === "bitcoin") {
+      valor = real * 0.000003;
+    }
+    setEquacao(valor);
+    setReal(value);
+  }
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    <Pagina titulo="Conversor de Moedas">
+      <Form>
+        <Row md={5}>
+          <Col md={5} className="py-2">
+            <Form.Group>
+              <Form.Label>{taxaConversao}</Form.Label>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Real</Form.Label>
+              <Form.Control
+                type="number"
+                name="real"
+                value={real}
+                onChange={(e) => {
+                  handleConvertion(e.target.value);
+                }}
+                step={0.01}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>{moeda}</Form.Label>
+              <Form.Control
+                type="number"
+                name="moeda"
+                value={equacao}
+                readOnly
+              />
+            </Form.Group>
+          </Col>
+          <Col md={5} className="py-2">
+            <Form.Group className="mb-3">
+              <Form.Label>Escolha a moeda:</Form.Label>
+              <Form.Select
+                name="moeda"
+                value={moeda}
+                onChange={(e) => {
+                  setMoeda(e.target.value);
+                  handleMoeda(e.target.value);
+                  handleConvertion();
+                }}
+              >
+                <option value="">Selecione</option>
+                <option value="dolar">Dólar</option>
+                <option value="euro">Euro</option>
+                <option value="bitcoin">Bitcoin</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col md={2} className="py-2">
+            <Card.Img src={handleImage(moeda)} />
+          </Col>
+        </Row>
+      </Form>
+    </Pagina>
   );
 }
