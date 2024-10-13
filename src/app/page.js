@@ -2,7 +2,7 @@
 
 import Pagina from "@/components/Pagina";
 import { useState } from "react";
-import { Card, Col, Form, Row } from "react-bootstrap";
+import { Button, Card, Col, Form, Row } from "react-bootstrap";
 
 export default function CambistaPage() {
   const [moeda, setMoeda] = useState("");
@@ -39,20 +39,28 @@ export default function CambistaPage() {
   function handleConvertion(value) {
     let valor = 0;
     if (moeda === "dolar") {
-      valor = real * 0.2;
+      valor = value * 0.2;
     } else if (moeda === "euro") {
-      valor = real * 0.18;
+      valor = value * 0.18;
     } else if (moeda === "bitcoin") {
-      valor = real * 0.000003;
+      valor = value * 0.000003;
     }
     setEquacao(valor);
     setReal(value);
+  }
+
+  function limpar() {
+    setMoeda("");
+    setTaxaConversao("");
+    setReal(1);
+    setEquacao(0);
   }
 
   return (
     <Pagina titulo="Conversor de Moedas">
       <Form>
         <Row md={5}>
+          {/* bootstrap:  */}
           <Col md={5} className="py-2">
             <Form.Group>
               <Form.Label>{taxaConversao}</Form.Label>
@@ -88,7 +96,7 @@ export default function CambistaPage() {
                 onChange={(e) => {
                   setMoeda(e.target.value);
                   handleMoeda(e.target.value);
-                  handleConvertion();
+                  handleConvertion(real); // Passando o valor atual de "real"
                 }}
               >
                 <option value="">Selecione</option>
@@ -96,6 +104,9 @@ export default function CambistaPage() {
                 <option value="euro">Euro</option>
                 <option value="bitcoin">Bitcoin</option>
               </Form.Select>
+            </Form.Group>
+            <Form.Group className="text-end">
+              <Button onClick={limpar}>Limpar</Button>
             </Form.Group>
           </Col>
           <Col md={2} className="py-2">
